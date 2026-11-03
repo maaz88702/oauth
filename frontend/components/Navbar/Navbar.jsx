@@ -16,10 +16,11 @@ export default function Navbar() {
         >
           {[
             ['Home', '/'],
-            ['Login', '/login'],
             ['Users', '/users'],
             ['About', '/about'],
             ['Contact', '/contact'],
+            ['Login', '/login'],
+            ['signup', '/signup'],
           ].map(([label, href]) => (
             <Link
               key={href}

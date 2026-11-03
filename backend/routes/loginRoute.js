@@ -1,6 +1,5 @@
 const router = require('express').Router();
-const { loginPost } = require('../controllers/loginController');
-const { googleLogin } = require('../controllers/authController');
+const { loginPost, googleLogin } = require('../controllers/loginController');
 
 router.post('/', loginPost);
 router.get('/google', googleLogin);

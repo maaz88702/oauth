@@ -26,14 +26,19 @@ export default function LoginPage() {
     setLoading(true);
 
     try {
-      // Connects to your backend running on port 8080
-      const res = await fetch('http://localhost:8080/api/auth/login', {
+      const backendUrl = process.env.NEXT_PUBLIC_BACKEND_URL || 'http://localhost:8080';
+      const res = await fetch(`${backendUrl}/api/login`, {
         method: 'POST',
+        credentials: 'include',
         headers: {
           'Content-Type': 'application/json',
         },
         body: JSON.stringify(formData),
       });
+
+      if (!res.headers.get('content-type')?.includes('application/json')) {
+        throw new Error('Unable to reach the login service. Check the backend URL and try again.');
+      }
 
       const data = await res.json();
 
@@ -42,23 +47,23 @@ export default function LoginPage() {
       }
 
       setMessage('Login successful! Redirecting...');
-      
-      // Redirect user to dashboard or home after successful login
-      router.push('/dashboard'); 
+
+      router.push('/users');
     } catch (err) {
-      setMessage(err.message);
+      setMessage(err instanceof Error ? err.message : 'Login failed. Please try again.');
     } finally {
       setLoading(false);
     }
   };
 
   const handleGoogleLogin = () => {
-    window.location.href = 'http://localhost:8080/auth/google';
+    const backendUrl = process.env.NEXT_PUBLIC_BACKEND_URL || 'http://localhost:8080';
+    window.location.assign(new URL('/auth/google', backendUrl).toString());
   };
 
   return (
-    <main className="flex min-h-screen items-center justify-center bg-slate-50 px-4 py-12 text-slate-800">
-      <div className="w-full max-w-md space-y-8 rounded-xl border border-slate-200 bg-white p-8 shadow-sm">
+    <main className="flex min-h-full items-center justify-center bg-slate-50 px-4 py-8 text-slate-800 sm:py-12">
+      <div className="my-auto w-full max-w-md space-y-8 rounded-xl border border-slate-200 bg-white p-6 shadow-sm sm:p-8">
         <div className="text-center">
           <p className="text-sm font-semibold uppercase tracking-[0.2em] text-indigo-600">My Website</p>
           <h1 className="mt-3 text-3xl font-bold tracking-tight text-slate-900">Welcome back</h1>
@@ -137,7 +142,7 @@ export default function LoginPage() {
             message.includes('successful') 
               ? 'bg-green-50 border-green-200 text-green-700' 
               : 'bg-red-50 border-red-200 text-red-700'
-          }`}>
+          }`} role="status" aria-live="polite">
             {message}
           </div>
         )}
@@ -145,7 +150,7 @@ export default function LoginPage() {
         <div className="flex justify-between items-center text-sm text-slate-600 mt-4">
           <Link href="/" className="font-medium text-slate-500 hover:text-slate-700">Back to home</Link>
           <p>
-            Don't have an account?{' '}
+            Don&apos;t have an account?{' '}
             <Link href="/signup" className="font-medium text-indigo-600 hover:text-indigo-700">Sign up</Link>
           </p>
         </div>

@@ -14,6 +14,11 @@ const userSchema = new mongoose.Schema(
       lowercase: true,
       trim: true
     },
+    password: {
+      type: String,
+      // Leave required: false so Google/GitHub users can register without a password
+      required: false 
+    },
     authProviders: [
       {
         provider: {
